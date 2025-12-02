@@ -1,0 +1,81 @@
+{
+  "name": "Quote",
+  "type": "object",
+  "properties": {
+    "project_description": {
+      "type": "string",
+      "description": "Description libre du projet"
+    },
+    "project_type": {
+      "type": "string",
+      "enum": ["site_vitrine", "site_ecommerce", "application_web", "application_mobile", "custom"],
+      "description": "Type de projet"
+    },
+    "number_of_pages": {
+      "type": "number",
+      "description": "Nombre de pages ou \u00e9crans"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Fonctionnalit\u00e9s souhait\u00e9es"
+    },
+    "design_level": {
+      "type": "string",
+      "enum": ["basic", "standard", "premium", "custom"],
+      "description": "Niveau de design souhait\u00e9"
+    },
+    "timeline": {
+      "type": "string",
+      "enum": ["urgent", "1_month", "2_3_months", "flexible"],
+      "description": "D\u00e9lai souhait\u00e9"
+    },
+    "budget_range": {
+      "type": "string",
+      "enum": ["small", "medium", "large", "enterprise"],
+      "description": "Fourchette budg\u00e9taire"
+    },
+    "has_content": {
+      "type": "boolean",
+      "description": "Le client a-t-il d\u00e9j\u00e0 le contenu"
+    },
+    "needs_maintenance": {
+      "type": "boolean",
+      "description": "Besoin de maintenance"
+    },
+    "estimated_price": {
+      "type": "number",
+      "description": "Prix estim\u00e9 en euros"
+    },
+    "full_name": {
+      "type": "string",
+      "description": "Nom complet du client"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email du client"
+    },
+    "phone": {
+      "type": "string",
+      "description": "T\u00e9l\u00e9phone du client"
+    },
+    "company": {
+      "type": "string",
+      "description": "Nom de l'entreprise"
+    },
+    "pdf_url": {
+      "type": "string",
+      "description": "URL du PDF de l'estimation"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "sent", "viewed", "accepted", "rejected"],
+      "default": "draft",
+      "description": "Statut de l'estimation"
+    }
+  },
+  "required": ["project_description"]
+}
