@@ -1,5 +1,10 @@
 // Configuration de l'API
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+// En production, utilise l'URL relative /api qui sera gérée par le proxy
+// En développement local (hors Docker), utilise localhost:8000
+const API_URL = import.meta.env.VITE_API_URL || "/api";
+
+// Debug : afficher l'URL utilisée
+console.log("🔗 API_URL:", API_URL, "- Environment:", import.meta.env.MODE);
 
 /**
  * Service pour l'abonnement à la newsletter

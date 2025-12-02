@@ -68,10 +68,11 @@ services:
     build:
       context: ./landing-page-front
       dockerfile: Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL}
     container_name: marketing-bot-frontend
     restart: unless-stopped
+    environment:
+      # Variable d'environnement pour Vite (mode dev)
+      - VITE_API_URL=${VITE_API_URL}
     ports:
       - "3000:3000"
     volumes:

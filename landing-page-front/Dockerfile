@@ -16,7 +16,7 @@ COPY . .
 # Exposer le port
 EXPOSE 3000
 
-# Variable d'environnement pour Vite
+# Variables d'environnement pour Vite
 ENV HOST=0.0.0.0
 
 # Commande pour démarrer le serveur de développement
