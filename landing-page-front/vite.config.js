@@ -21,5 +21,10 @@ export default defineConfig({
       ".axynis.cloud", // Permet tous les sous-domaines
       "localhost",
     ],
+    hmr: {
+      protocol: "wss",
+      host: "axynis.cloud",
+      clientPort: 443,
+    },
   },
 });
