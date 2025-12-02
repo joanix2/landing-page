@@ -13,11 +13,11 @@ RUN npm install
 # Copier le code source
 COPY . .
 
-# Exposer le port Vite
-EXPOSE 5173
+# Exposer le port
+EXPOSE 3000
 
 # Variable d'environnement pour Vite
 ENV HOST=0.0.0.0
 
 # Commande pour démarrer le serveur de développement
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["npm", "run", "dev"]

@@ -23,7 +23,7 @@ Après avoir démarré les conteneurs avec `docker-compose up -d`, accédez à l
    - **Domain Names**: `localhost` (ou votre domaine)
    - **Scheme**: `http`
    - **Forward Hostname / IP**: `frontend`
-   - **Forward Port**: `5173`
+   - **Forward Port**: `3000`
    - ✅ Cochez **Cache Assets**
    - ✅ Cochez **Block Common Exploits**
    - ✅ Cochez **Websockets Support** (pour le HMR de Vite)
@@ -77,7 +77,7 @@ Si vous voulez une configuration rapide sans passer par l'interface :
 ### Option 1 : Utiliser Custom Locations
 
 1. Créez un Proxy Host pour `localhost`
-2. Forward vers `frontend:5173`
+2. Forward vers `frontend:3000`
 3. Dans l'onglet **Custom Locations**, ajoutez :
 
    **Location**: `/api/`
