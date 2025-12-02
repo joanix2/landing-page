@@ -4,14 +4,14 @@ import os
 import hashlib
 from typing import Optional
 from datetime import datetime, timedelta
+from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
-
-from .prompts import SYSTEM_PROMPT, USER_PROMPT
+from jinja2 import Environment, FileSystemLoader
 
 
 class EstimationSuggestion(BaseModel):
@@ -46,11 +46,32 @@ class AIService:
         # Parser pour structurer la sortie
         self.parser = PydanticOutputParser(pydantic_object=EstimationSuggestion)
         
-        # Template du prompt (chargé depuis prompts.py)
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", SYSTEM_PROMPT),
-            ("user", USER_PROMPT)
-        ])
+        # Configuration de Jinja2 pour les templates de prompts
+        template_dir = Path(__file__).parent / "templates"
+        self.jinja_env = Environment(loader=FileSystemLoader(str(template_dir)))
+        
+        # Charger les templates de prompts
+        self.system_prompt_template = self.jinja_env.get_template("system_prompt.txt.j2")
+        self.user_prompt_template = self.jinja_env.get_template("user_prompt.txt.j2")
+    
+    def _render_prompts(self, description: str, format_instructions: str) -> tuple[str, str]:
+        """
+        Rendre les templates de prompts avec Jinja2.
+        
+        Args:
+            description: Description du projet
+            format_instructions: Instructions de formatage
+            
+        Returns:
+            Tuple (system_prompt, user_prompt)
+        """
+        system_prompt = self.system_prompt_template.render(
+            format_instructions=format_instructions
+        )
+        user_prompt = self.user_prompt_template.render(
+            description=description
+        )
+        return system_prompt, user_prompt
     
     def _calculate_budget(self, nombre_pages: int) -> str:
         """
@@ -177,13 +198,22 @@ class AIService:
             
             # Pas de cache, appeler l'IA
             print("🤖 Génération de nouvelles suggestions via IA...")
-            chain = self.prompt | self.llm | self.parser
+            
+            # Rendre les prompts avec Jinja2
+            system_prompt, user_prompt = self._render_prompts(
+                description_projet,
+                self.parser.get_format_instructions()
+            )
+            
+            # Créer le prompt LangChain
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", system_prompt),
+                ("user", user_prompt)
+            ])
             
             # Exécuter la chaîne
-            result = await chain.ainvoke({
-                "description": description_projet,
-                "format_instructions": self.parser.get_format_instructions()
-            })
+            chain = prompt | self.llm | self.parser
+            result = await chain.ainvoke({})
             
             # Sauvegarder dans le cache si DB disponible
             if db and result:

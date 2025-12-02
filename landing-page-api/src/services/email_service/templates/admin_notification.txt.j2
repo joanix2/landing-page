@@ -1,0 +1,35 @@
+{{ title }}
+{{ '=' * title|length }}
+
+{% if notification_type == 'newsletter' %}
+Nouvel abonnement à la newsletter
+
+Email : {{ data.email }}
+Date : {{ date }}
+
+{% elif notification_type == 'estimation' %}
+Nouvelle demande d'estimation reçue
+
+INFORMATIONS CLIENT
+-------------------
+Nom : {{ data.nom or 'Non spécifié' }}
+Email : {{ data.email }}
+Téléphone : {{ data.telephone or 'Non spécifié' }}
+Entreprise : {{ data.entreprise or 'Non spécifié' }}
+
+DÉTAILS DU PROJET
+-----------------
+Type : {{ data.type_projet }}
+Description : {{ data.description_projet }}
+Nombre de pages : {{ data.nombre_pages }}
+Délai souhaité : {{ data.delai_souhaite }}
+Budget : {{ data.budget }}
+
+⚠️ ACTION REQUISE : Répondre au client dans les 24-48 heures.
+
+{% endif %}
+
+Date de la notification : {{ date }}
+
+---
+Notification automatique du système

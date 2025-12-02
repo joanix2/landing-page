@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .alert {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .info-table th {
+            background: #f8f9fa;
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .info-table td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .footer {
+            background: #f9f9f9;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>🔔 {{ title }}</h1>
+        </div>
+        <div class="content">
+            {% if notification_type == 'newsletter' %}
+                <p><strong>Nouvel abonnement à la newsletter</strong></p>
+                <table class="info-table">
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ data.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <td>{{ date }}</td>
+                    </tr>
+                </table>
+            {% elif notification_type == 'estimation' %}
+                <p><strong>Nouvelle demande d'estimation reçue</strong></p>
+                
+                <h3>Informations Client</h3>
+                <table class="info-table">
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ data.nom or 'Non spécifié' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ data.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Téléphone</th>
+                        <td>{{ data.telephone or 'Non spécifié' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Entreprise</th>
+                        <td>{{ data.entreprise or 'Non spécifié' }}</td>
+                    </tr>
+                </table>
+                
+                <h3>Détails du Projet</h3>
+                <table class="info-table">
+                    <tr>
+                        <th>Type</th>
+                        <td>{{ data.type_projet }}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{ data.description_projet }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nombre de pages</th>
+                        <td>{{ data.nombre_pages }}</td>
+                    </tr>
+                    <tr>
+                        <th>Délai souhaité</th>
+                        <td>{{ data.delai_souhaite }}</td>
+                    </tr>
+                    <tr>
+                        <th>Budget</th>
+                        <td>{{ data.budget }}</td>
+                    </tr>
+                </table>
+                
+                <div class="alert">
+                    <strong>⚠️ Action requise :</strong> Répondre au client dans les 24-48 heures.
+                </div>
+            {% endif %}
+        </div>
+        <div class="footer">
+            <p>Notification automatique du système</p>
+            <p>{{ date }}</p>
+        </div>
+    </div>
+</body>
+</html>

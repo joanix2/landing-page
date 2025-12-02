@@ -1,126 +1,151 @@
 # Services
 
-Ce dossier contient les services métier de l'application.
+Ce dossier contient tous les services métier de l'application.
 
-## AIService
+## Structure
 
-Service d'intelligence artificielle pour la pré-complétion du formulaire d'estimation.
-
-### Responsabilités
-
-- Analyser la description d'un projet client
-- Générer des suggestions intelligentes pour :
-  - Type de projet
-  - Nombre de pages
-  - Délai souhaité
-  - Budget estimé
-- Fournir une explication des suggestions
-
-### Technologies
-
-- **Langchain** : Framework pour applications LLM
-- **OpenAI GPT-4o-mini** : Modèle de langage
-- **Pydantic** : Validation et parsing des données
-
-### Utilisation
-
-```python
-from src.services.ai_service import get_ai_service
-
-# Obtenir l'instance du service
-ai_service = get_ai_service()
-
-# Analyser un projet
-result = await ai_service.analyze_and_suggest(
-    "Je veux créer un site web pour mon restaurant"
-)
-
-if result['success']:
-    suggestions = result['suggestions']
-    print(f"Type: {suggestions['type_projet']}")
-    print(f"Pages: {suggestions['nombre_pages']}")
-    print(f"Budget: {suggestions['budget']}")
+```
+services/
+├── __init__.py           # Exports centralisés des services
+├── ai_service/           # Service d'intelligence artificielle
+│   ├── __init__.py
+│   ├── ai_service.py
+│   ├── README.md
+│   └── templates/
+│       ├── system_prompt.txt.j2
+│       └── user_prompt.txt.j2
+└── email_service/        # Service d'envoi d'emails
+    ├── __init__.py
+    ├── email_service.py
+    ├── README.md
+    └── templates/
+        ├── newsletter_confirmation.html.j2
+        ├── newsletter_confirmation.txt.j2
+        ├── estimation_confirmation.html.j2
+        ├── estimation_confirmation.txt.j2
+        ├── admin_notification.html.j2
+        └── admin_notification.txt.j2
 ```
 
-### Configuration
+## Services disponibles
 
-Variable d'environnement requise :
+### 🤖 AIService
+
+Service d'intelligence artificielle pour générer des suggestions d'estimation de projet.
+
+**Fonctionnalités :**
+
+- Analyse de descriptions de projet en langage naturel
+- Suggestion de type de projet (Landing Page, Site Vitrine, E-commerce, Sur Mesure)
+- Génération automatique de liste de pages
+- Cache des résultats pour optimiser les performances
+
+**Documentation :** [ai_service/README.md](./ai_service/README.md)
+
+### 📧 EmailService
+
+Service d'envoi d'emails transactionnels avec templates Jinja2.
+
+**Fonctionnalités :**
+
+- Confirmation d'inscription à la newsletter
+- Confirmation de demande d'estimation (client)
+- Notification admin de nouvelle estimation
+- Support HTML + texte brut
+- Templates personnalisables
+
+**Documentation :** [email_service/README.md](./email_service/README.md)
+
+## Utilisation
+
+### Import centralisé
+
+```python
+from src.services import AIService, EmailService
+
+# Initialiser les services
+ai_service = AIService()
+email_service = EmailService()
+```
+
+### Import spécifique
+
+```python
+from src.services.ai_service import AIService, EstimationSuggestion
+from src.services.email_service import EmailService
+```
+
+## Configuration
+
+Chaque service a ses propres variables d'environnement. Consultez le README de chaque service pour les détails.
+
+### Variables requises globalement
 
 ```bash
-OPENAI_API_KEY=sk-your-key-here
+# AI Service
+OPENAI_API_KEY=sk-...
+
+# Email Service
+SMTP_SERVER=smtp.hostinger.com
+SMTP_PORT=587
+SMTP_EMAIL=contact@axynis.cloud
+SMTP_PASSWORD=...
+ADMIN_EMAIL=admin@axynis.cloud
 ```
 
-### Architecture
+## Dépendances
+
+### AI Service
 
 ```
-Client Request
-     ↓
-ai_suggestions.py (Route)
-     ↓
-AIService.analyze_and_suggest()
-     ↓
-Langchain Chain (Prompt → LLM → Parser)
-     ↓
-EstimationSuggestion (Pydantic Model)
-     ↓
-JSON Response
+langchain-openai>=0.0.2
+langchain>=0.1.0
+jinja2>=3.1.2
+pydantic>=2.0.0
 ```
 
-### Modèle de données
+### Email Service
 
-**Input :**
-
-```python
-{
-    "description_projet": str  # min 20 caractères
-}
+```
+jinja2>=3.1.2
 ```
 
-**Output :**
+## Architecture
 
-```python
-{
-    "success": bool,
-    "suggestions": {
-        "type_projet": str,      # Landing Page | Site Vitrine | E-commerce | Projet Sur Mesure
-        "nombre_pages": int,     # >= 1
-        "delai_souhaite": str,   # Rapide | Normal | Flexible
-        "budget": str            # Moins de 5 000€ | 5 000€ - 10 000€ | ...
-    },
-    "explication": str           # 2-3 phrases
-}
-```
+Chaque service suit une structure cohérente :
 
-### Performance
+1. **Module principal** (`service_name.py`) : Contient la classe du service
+2. **`__init__.py`** : Exporte les classes et fonctions publiques
+3. **`templates/`** : Templates Jinja2 spécifiques au service
+4. **`README.md`** : Documentation détaillée du service
 
-- **Temps de réponse** : 2-4 secondes
-- **Coût** : ~$0.001 par requête
-- **Rate limit** : 3,500 requêtes/minute (OpenAI)
+### Principes
 
-### Tests
+- ✅ **Isolation** : Chaque service a ses propres dépendances et templates
+- ✅ **Réutilisabilité** : Services utilisables indépendamment
+- ✅ **Testabilité** : Chaque service peut être testé en isolation
+- ✅ **Documentation** : README dédié par service
+- ✅ **Configuration** : Variables d'environnement clairement définies
 
-Exécuter le script de test :
+## Tests
 
 ```bash
-python test_ai_service.py
+# Tester le service AI
+python -m pytest tests/test_ai_service.py
+
+# Tester le service Email
+python -m pytest tests/test_email_service.py
 ```
 
-### Gestion d'erreurs
+## Ajout d'un nouveau service
 
-- Configuration manquante → ValueError
-- Description trop courte → success: false avec message
-- Erreur API OpenAI → success: false avec message générique
+1. Créer un nouveau dossier `nouveau_service/`
+2. Créer `__init__.py`, `nouveau_service.py`, `README.md`
+3. Ajouter les templates dans `nouveau_service/templates/`
+4. Exporter dans `services/__init__.py`
+5. Ajouter les dépendances dans `requirements.txt`
+6. Documenter dans ce README
 
-### Évolutions futures
+## Support
 
-- Cache pour descriptions similaires
-- Fine-tuning sur données réelles
-- Support multilingue
-- Métriques et monitoring
-- Retry automatique
-
-### Documentation
-
-- [Guide rapide](../AI_SERVICE_GUIDE.md)
-- [Documentation complète](../docs/AI_SERVICE.md)
-- [Architecture](../docs/ARCHITECTURE_AI.md)
+Pour toute question sur un service spécifique, consultez son README dédié.
