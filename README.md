@@ -1,6 +1,6 @@
 # Marketing Bot - Landing Page
 
-Application complète avec Frontend React, API FastAPI, PostgreSQL et Nginx.
+Application complète avec Frontend React, API FastAPI, PostgreSQL et Nginx Proxy Manager.
 
 ## 🏗️ Architecture
 
@@ -8,7 +8,7 @@ Application complète avec Frontend React, API FastAPI, PostgreSQL et Nginx.
 - **Backend**: FastAPI + SQLAlchemy + Langchain
 - **Base de données**: PostgreSQL 16
 - **Visualisation DB**: pgAdmin 4
-- **Reverse Proxy**: Nginx
+- **Reverse Proxy**: Nginx Proxy Manager (avec interface graphique)
 - **Containerisation**: Docker + Docker Compose
 
 ## 📋 Prérequis
@@ -59,12 +59,17 @@ docker-compose up --build
 
 Une fois les conteneurs démarrés :
 
-- **Application Frontend**: http://localhost
-- **API Backend**: http://localhost/api
-- **Documentation API (Swagger)**: http://localhost/docs
+- **Nginx Proxy Manager (Interface Admin)**: http://localhost:81
+  - Première connexion : `admin@example.com` / `changeme`
+  - ⚠️ Changez ces identifiants lors de la première connexion !
+- **Application Frontend**: http://localhost (après config NPM)
+- **API Backend**: http://localhost/api (après config NPM)
+- **Documentation API (Swagger)**: http://localhost/docs (après config NPM)
 - **pgAdmin (Visualisation DB)**: http://localhost:5050
   - Email: `admin@admin.com`
   - Mot de passe: `admin123`
+
+📖 **Consultez [NGINX_PROXY_MANAGER_SETUP.md](./NGINX_PROXY_MANAGER_SETUP.md) pour configurer les proxies via l'interface graphique.**
 
 ### Configuration de pgAdmin
 
