@@ -16,5 +16,10 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 3000,
+    allowedHosts: [
+      "axynis.cloud",
+      ".axynis.cloud", // Permet tous les sous-domaines
+      "localhost",
+    ],
   },
 });
