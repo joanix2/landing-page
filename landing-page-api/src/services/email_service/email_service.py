@@ -10,6 +10,10 @@ import os
 from datetime import datetime
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
+from dotenv import load_dotenv
+
+# Charger les variables d'environnement
+load_dotenv()
 
 
 class EmailService:
@@ -96,25 +100,31 @@ class EmailService:
             print(f"❌ Erreur lors de l'envoi de l'email à {to_email}: {e}")
             return False
     
-    def send_newsletter_confirmation(self, email: str) -> bool:
+    def send_newsletter_confirmation(self, email: str, base_url: str = "https://axynis.cloud") -> bool:
         """
         Envoie un email de confirmation d'abonnement à la newsletter.
         
         Args:
             email: Email du destinataire
+            base_url: URL de base du site (défaut: https://axynis.cloud)
             
         Returns:
             bool: True si l'email a été envoyé avec succès
         """
         subject = "✅ Confirmation d'abonnement à la newsletter Axynis"
         
+        # URL de désinscription
+        from urllib.parse import quote
+        unsubscribe_url = f"{base_url}/unsubscribe?email={quote(email)}"
+        
         context = {
             "email": email,
-            "year": datetime.now().year
+            "year": datetime.now().year,
+            "unsubscribe_url": unsubscribe_url
         }
         
-        body_text = self.render_template("newsletter_confirmation.txt", context)
-        body_html = self.render_template("newsletter_confirmation.html", context)
+        body_text = self.render_template("newsletter_confirmation.txt.j2", context)
+        body_html = self.render_template("newsletter_confirmation.html.j2", context)
         
         return self.send_email(email, subject, body_text, body_html)
     
@@ -144,8 +154,8 @@ class EmailService:
             "year": datetime.now().year
         }
         
-        body_text = self.render_template("estimation_confirmation.txt", context)
-        body_html = self.render_template("estimation_confirmation.html", context)
+        body_text = self.render_template("estimation_confirmation.txt.j2", context)
+        body_html = self.render_template("estimation_confirmation.html.j2", context)
         
         return self.send_email(email, subject, body_text, body_html)
     
@@ -182,8 +192,8 @@ class EmailService:
             "date": datetime.now().strftime("%d/%m/%Y %H:%M")
         }
         
-        body_text = self.render_template("admin_notification.txt", context)
-        body_html = self.render_template("admin_notification.html", context)
+        body_text = self.render_template("admin_notification.txt.j2", context)
+        body_html = self.render_template("admin_notification.html.j2", context)
         
         return self.send_email(admin_email, subject, body_text, body_html)
 
