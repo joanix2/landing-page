@@ -10,7 +10,7 @@ print("""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Route : POST /api/newsletter
-Body  : {"email": "user@example.com"}
+Body : {"email": "user@example.com"}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SCÉNARIO 1 : Client n'existe pas
@@ -75,7 +75,7 @@ GESTION D'ERREURS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Si l'email ne peut pas être envoyé :
-→ db.rollback()  # Annuler l'inscription
+→ db.rollback() # Annuler l'inscription
 → HTTPException(503, "Impossible d'envoyer l'email...")
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -83,29 +83,31 @@ MODÈLE CLIENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 class Client(Base):
-    id: int (PK)
-    email: str (UNIQUE, NOT NULL)
-    prenom: str (nullable)
-    nom: str (nullable)
-    telephone: str (nullable)
-    newsletter: bool (NOT NULL, default=True)  ← Contrôle l'abonnement
+id: int (PK)
+email: str (UNIQUE, NOT NULL)
+prenom: str (nullable)
+nom: str (nullable)
+telephone: str (nullable)
+newsletter: bool (NOT NULL, default=True) ← Contrôle l'abonnement
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EMAIL AUTOMATIQUE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Template : newsletter_confirmation.html.j2
-Macros   : email_header(), email_footer() avec lien désinscription
-Variables: 
-  - email: user@example.com
-  - year: 2025
-  - unsubscribe_url: https://axynis.cloud/unsubscribe?email=xxx
+Macros : email_header(), email_footer() avec lien désinscription
+Variables:
+
+- email: user@example.com
+- year: 2025
+- unsubscribe_url: https://axynis.cloud/unsubscribe?email=xxx
 
 Contenu automatique du footer :
-  - Email destinataire
-  - Copyright Axynis
-  - Lien site web
-  - Lien de désinscription (conditionnel)
+
+- Email destinataire
+- Copyright Axynis
+- Lien site web
+- Lien de désinscription (conditionnel)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 TESTS MANUELS
@@ -113,29 +115,33 @@ TESTS MANUELS
 
 Test 1 - Nouvelle inscription :
 curl -X POST http://localhost:8000/api/newsletter \\
-  -H "Content-Type: application/json" \\
-  -d '{"email":"nouveau@example.com"}'
+-H "Content-Type: application/json" \\
+-d '{"email":"nouveau@example.com"}'
 
 Attendu:
+
 - 200 OK
 - {"message": "Merci...", "email_sent": true}
 - Email reçu
 
 Test 2 - Réinscription après désinscription :
+
 1. Se désinscrire via /api/newsletter/unsubscribe/email@example.com
 2. Se réinscrire via POST /api/newsletter
 
 Attendu:
+
 - 200 OK
 - newsletter passé de False à True
 - Email reçu
 
 Test 3 - Déjà inscrit :
 curl -X POST http://localhost:8000/api/newsletter \\
-  -H "Content-Type: application/json" \\
-  -d '{"email":"deja.inscrit@example.com"}'
+-H "Content-Type: application/json" \\
+-d '{"email":"deja.inscrit@example.com"}'
 
 Attendu:
+
 - 200 OK
 - {"message": "Vous êtes déjà inscrit...", "email_sent": false}
 - Pas d'email
