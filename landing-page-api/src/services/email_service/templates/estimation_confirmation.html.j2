@@ -1,3 +1,4 @@
+{% from "_macros.html.j2" import email_header, email_footer, email_styles %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -144,6 +145,7 @@
             <p>Cet email a été envoyé à <strong>{{ client.email }}</strong></p>
             <p>Demande reçue le {{ date }}</p>
             <p>© {{ year }} Axynis. Tous droits réservés.</p>
+            <p>🌐 <a href="https://axynis.cloud" style="color: #667eea; text-decoration: none;">axynis.cloud</a></p>
         </div>
     </div>
 </body>

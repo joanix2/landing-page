@@ -12,8 +12,5 @@ Cordialement,
 L'équipe Axynis
 https://axynis.cloud
 
----
-Cet email a été envoyé à {{ email }}
-© {{ year }} Axynis. Tous droits réservés.
-
-Se désinscrire : {{ unsubscribe_url }}
+{% from "_macros.txt.j2" import email_footer_text %}
+{{ email_footer_text(email, unsubscribe_url) }}

@@ -1,0 +1,11 @@
+{# Macro pour le footer texte des emails #}
+{% macro email_footer_text(email, unsubscribe_url=None) %}
+---
+Cet email a été envoyé à {{ email }}
+© {{ year }} Axynis. Tous droits réservés.
+🌐 https://axynis.cloud
+{% if unsubscribe_url %}
+
+Se désinscrire : {{ unsubscribe_url }}
+{% endif %}
+{% endmacro %}
