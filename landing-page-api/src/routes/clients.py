@@ -20,29 +20,35 @@ async def subscribe_newsletter(client_in: ClientCreate, db: AsyncSession = Depen
     Retourne une erreur si l'envoi d'email échoue.
     """
     try:
-        # Vérifier si l'email existe déjà
+        # 1. Vérifier si le client existe déjà dans la base
         result = await db.execute(
             select(Client).where(Client.email == client_in.email)
         )
         existing_client = result.scalar_one_or_none()
         
-        # Variable pour savoir si c'est une nouvelle inscription
-        is_new_subscription = False
+        # Variable pour savoir si on doit envoyer l'email
+        should_send_email = False
         
-        # Si l'email n'existe pas, créer un nouveau client
         if not existing_client:
+            # CAS 1: Client n'existe pas → Créer nouveau client avec newsletter=True
             client = Client(email=client_in.email, newsletter=True)
             db.add(client)
             await db.commit()
-            is_new_subscription = True
+            await db.refresh(client)
+            should_send_email = True
+            
         elif not existing_client.newsletter:
-            # Si le client existe mais n'était pas abonné
+            # CAS 2: Client existe mais n'était pas abonné → Réabonner (newsletter=True)
             existing_client.newsletter = True
             await db.commit()
-            is_new_subscription = True
+            should_send_email = True
+            
+        else:
+            # CAS 3: Client existe et est déjà abonné → Rien à faire
+            pass
         
-        # Envoyer l'email de confirmation uniquement pour les nouvelles inscriptions
-        if is_new_subscription:
+        # 2. Envoyer l'email de confirmation uniquement si nécessaire
+        if should_send_email:
             email_service = EmailService()
             email_sent = email_service.send_newsletter_confirmation(client_in.email)
             
@@ -54,10 +60,10 @@ async def subscribe_newsletter(client_in: ClientCreate, db: AsyncSession = Depen
                     detail="Impossible d'envoyer l'email de confirmation. Veuillez réessayer plus tard."
                 )
         
-        # Toujours retourner 200 OK pour les inscriptions réussies
+        # 3. Retourner la réponse
         return {
-            "message": "Merci pour votre inscription !",
-            "email_sent": is_new_subscription
+            "message": "Merci pour votre inscription !" if should_send_email else "Vous êtes déjà inscrit à notre newsletter.",
+            "email_sent": should_send_email
         }
         
     except HTTPException:
